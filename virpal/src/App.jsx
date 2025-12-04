@@ -38,109 +38,11 @@ function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const heroRef = useRef(null);
-  const cursorRef = useRef(null);
-  const cursorDotRef = useRef(null);
 
   useEffect(() => {
     // Wait for DOM to be ready
     const initAnimations = () => {
-      // Custom cursor with RAF for smooth performance
-      const cursor = cursorRef.current;
-      const cursorDot = cursorDotRef.current;
-      let mouseX = 0;
-      let mouseY = 0;
-      let currentX = 0;
-      let currentY = 0;
-      let currentDotX = 0;
-      let currentDotY = 0;
-
-      // Cache particle elements and their initial positions
-      const particles = Array.from(document.querySelectorAll(".particle"));
-      const particleData = particles.map((particle) => {
-        const rect = particle.getBoundingClientRect();
-        return {
-          element: particle,
-          x: rect.left + rect.width / 2,
-          y: rect.top + rect.height / 2,
-          currentX: 0,
-          currentY: 0,
-        };
-      });
-
-      const grid = document.querySelector(".bg-grid");
-      let gridOffsetX = 0;
-      let gridOffsetY = 0;
-
-      // Throttle mousemove to 60fps max
-      let lastTime = 0;
-      const throttleDelay = 16; // ~60fps
-
-      const moveCursor = (e) => {
-        const now = Date.now();
-        if (now - lastTime < throttleDelay) return;
-        lastTime = now;
-
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-      };
-
-      // Use RAF for smooth 60fps animations
-      const animate = () => {
-        // Smooth cursor follow with lerp
-        currentX += (mouseX - currentX) * 0.15;
-        currentY += (mouseY - currentY) * 0.15;
-        currentDotX += (mouseX - currentDotX) * 0.5;
-        currentDotY += (mouseY - currentDotY) * 0.5;
-
-        if (cursor && cursorDot) {
-          cursor.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
-          cursorDot.style.transform = `translate(${currentDotX}px, ${currentDotY}px) translate(-50%, -50%)`;
-        }
-
-        // Optimize particle interactions - only update nearby particles (only in hero section)
-        if (particleData.length > 0) {
-          particleData.forEach((data) => {
-            const deltaX = mouseX - data.x;
-            const deltaY = mouseY - data.y;
-            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-            if (distance < 300) {
-              const force = (300 - distance) / 300;
-              const targetX = -deltaX * force * 0.8;
-              const targetY = -deltaY * force * 0.8;
-
-              // Smooth lerp instead of GSAP
-              data.currentX += (targetX - data.currentX) * 0.1;
-              data.currentY += (targetY - data.currentY) * 0.1;
-
-              data.element.style.transform = `translate(${data.currentX}px, ${data.currentY}px) scale(${1 + force * 0.3})`;
-              data.element.style.opacity = 0.4 + force * 0.3;
-            } else {
-              // Return to origin smoothly
-              data.currentX *= 0.95;
-              data.currentY *= 0.95;
-              data.element.style.transform = `translate(${data.currentX}px, ${data.currentY}px) scale(1)`;
-              data.element.style.opacity = 0.4;
-            }
-          });
-        }
-
-        // Smooth grid animation
-        if (grid) {
-          const targetOffsetX = (mouseX / window.innerWidth - 0.5) * 10;
-          const targetOffsetY = (mouseY / window.innerHeight - 0.5) * 10;
-
-          gridOffsetX += (targetOffsetX - gridOffsetX) * 0.05;
-          gridOffsetY += (targetOffsetY - gridOffsetY) * 0.05;
-
-          grid.style.backgroundPosition = `${50 + gridOffsetX}% ${50 + gridOffsetY}%`;
-        }
-
-        requestAnimationFrame(animate);
-      };
-
-      window.addEventListener("mousemove", moveCursor);
-      requestAnimationFrame(animate);
+      // Disabled cursor and particle animations for performance
 
       // Hero title animation with split text
       const heroTitle = document.querySelector(".hero-title");
@@ -225,6 +127,96 @@ function App() {
               word.style.color = color;
               word.style.opacity = opacity;
             });
+          },
+        });
+      }
+
+      // Skills marquee wrapper fade-in animation
+      const skillsMarqueeWrapper = document.querySelector(".skills-marquee-wrapper");
+      if (skillsMarqueeWrapper) {
+        gsap.set(skillsMarqueeWrapper, { opacity: 1, x: 0 });
+        gsap.fromTo(
+          skillsMarqueeWrapper,
+          { opacity: 0, x: -50 },
+          {
+            scrollTrigger: {
+              trigger: skillsMarqueeWrapper,
+              start: "top 85%",
+              toggleActions: "play none none none",
+            },
+            opacity: 1,
+            x: 0,
+            duration: 1,
+            ease: "power3.out",
+          }
+        );
+      }
+
+      // Skills description fade-in animation
+      const skillsDescription = document.querySelector(".skills-description");
+      if (skillsDescription) {
+        gsap.set(skillsDescription, { opacity: 1, x: 0 });
+        gsap.fromTo(
+          skillsDescription,
+          { opacity: 0, x: 50 },
+          {
+            scrollTrigger: {
+              trigger: skillsDescription,
+              start: "top 85%",
+              toggleActions: "play none none none",
+            },
+            opacity: 1,
+            x: 0,
+            duration: 1,
+            ease: "power3.out",
+            delay: 0.2,
+          }
+        );
+      }
+
+      // Skills text word-by-word animation
+      const skillsParagraphs = document.querySelectorAll(".skills-paragraph");
+      if (skillsParagraphs.length > 0) {
+        skillsParagraphs.forEach((para) => {
+          const text = para.textContent;
+          const words = text.split(" ");
+          para.innerHTML = words
+            .map((word) => `<span class="word">${word}</span>`)
+            .join(" ");
+        });
+
+        const allSkillsWords = document.querySelectorAll(".skills-paragraph .word");
+        
+        gsap.to(allSkillsWords, {
+          scrollTrigger: {
+            trigger: ".skills-description",
+            start: "top 80%",
+            end: "bottom 60%",
+            scrub: 1,
+            onUpdate: (self) => {
+              const progress = self.progress;
+              allSkillsWords.forEach((word, i) => {
+                const wordStart = i / allSkillsWords.length;
+                const wordEnd = (i + 1) / allSkillsWords.length;
+                const wordProgress = (progress - wordStart) / (wordEnd - wordStart);
+                const clampedProgress = Math.max(0, Math.min(1, wordProgress));
+
+                let color, opacity;
+                if (clampedProgress < 0.3) {
+                  color = "#94a3b8";
+                  opacity = 0.6;
+                } else if (clampedProgress < 0.6) {
+                  color = "#cbd5e1";
+                  opacity = 0.85;
+                } else {
+                  color = "#ffffff";
+                  opacity = 1;
+                }
+
+                word.style.color = color;
+                word.style.opacity = opacity;
+              });
+            },
           },
         });
       }
@@ -832,22 +824,9 @@ function App() {
     };
   }, []);
 
-  // Magnetic effect for cursor
-  const handleMouseEnter = (e) => {
-    gsap.to(cursorRef.current, {
-      scale: 3,
-      duration: 0.3,
-      ease: "power2.out",
-    });
-  };
-
-  const handleMouseLeave = (e) => {
-    gsap.to(cursorRef.current, {
-      scale: 1,
-      duration: 0.3,
-      ease: "power2.out",
-    });
-  };
+  // Cursor handlers - disabled for performance
+  const handleMouseEnter = () => {};
+  const handleMouseLeave = () => {};
 
   const skills = [
     {
@@ -1043,6 +1022,27 @@ function App() {
         </svg>
       ),
     },
+    {
+      name: "Postman",
+      color: "#FF6C37",
+      logo: (
+        <svg viewBox="0 0 128 128" width="48" height="48">
+          <path
+            fill="#FF6C37"
+            d="M64 8C33.1 8 8 33.1 8 64s25.1 56 56 56 56-25.1 56-56S94.9 8 64 8zm28.5 38.5L73 66l-9-9 19.5-19.5c2.5 2.5 6.5 2.5 9 0s2.5-6.5 0-9-6.5-2.5-9 0zm-45 45c-2.5 2.5-6.5 2.5-9 0s-2.5-6.5 0-9l19.5-19.5 9 9-19.5 19.5zm9-9L37 63l19.5-19.5c2.5-2.5 6.5-2.5 9 0l9 9-19.5 19.5c-2.5 2.5-6.5 2.5-9 0zm27-27l9 9-19.5 19.5-9-9L83.5 55.5z"
+          />
+        </svg>
+      ),
+    },
+    {
+      name: "Vercel",
+      color: "#ffffff",
+      logo: (
+        <svg viewBox="0 0 128 128" width="48" height="48">
+          <path fill="#ffffff" d="M64 8l56 96H8L64 8z" />
+        </svg>
+      ),
+    },
   ];
 
   const projects = [
@@ -1113,11 +1113,7 @@ function App() {
 
   return (
     <div className="app">
-      {/* Custom Cursor */}
-      <div ref={cursorRef} className="custom-cursor"></div>
-      <div ref={cursorDotRef} className="custom-cursor-dot"></div>
-
-      {/* Animated Background Grid */}
+      {/* Simplified Background */}
       <div className="bg-grid"></div>
 
       {/* Navbar */}
@@ -1238,22 +1234,6 @@ function App() {
 
       {/* Hero Section */}
       <section className="hero" id="home" ref={heroRef}>
-        <div className="particles-container">
-          {particles.map((particle) => (
-            <div
-              key={particle.id}
-              className="particle"
-              style={{
-                width: `${particle.size}px`,
-                height: `${particle.size}px`,
-                left: `${particle.left}%`,
-                top: `${particle.top}%`,
-                animationDelay: `${particle.delay}s`,
-              }}
-            />
-          ))}
-        </div>
-
         <div className="hero-content">
           <motion.div
             className="hero-tag"
@@ -1418,18 +1398,59 @@ function App() {
           </p>
         </div>
 
-        <div className="skills-grid">
-          {skills.map((skill, index) => (
-            <div
-              key={index}
-              className="skill-card"
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            >
-              <div className="skill-icon">{skill.logo}</div>
-              <div className="skill-name">{skill.name}</div>
+        <div className="skills-content-wrapper">
+          {/* Left Side - Skills Marquee with Lines */}
+          <div className="skills-marquee-wrapper">
+            <div className="skills-marquee-line top-line"></div>
+            <div className="skills-marquee-container">
+              {/* Column 1 - Scrolls Down - 4 skills */}
+              <div className="skills-column scroll-down">
+                <div className="skills-track">
+                  {[...skills.slice(0, 4), ...skills.slice(0, 4), ...skills.slice(0, 4)].map((skill, index) => (
+                    <div key={index} className="skill-card-marquee">
+                      <div className="skill-icon">{skill.logo}</div>
+                      <div className="skill-name">{skill.name}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Column 2 - Scrolls Up - 4 skills */}
+              <div className="skills-column scroll-up">
+                <div className="skills-track">
+                  {[...skills.slice(4, 8), ...skills.slice(4, 8), ...skills.slice(4, 8)].map((skill, index) => (
+                    <div key={index} className="skill-card-marquee">
+                      <div className="skill-icon">{skill.logo}</div>
+                      <div className="skill-name">{skill.name}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Column 3 - Scrolls Down - 6 skills */}
+              <div className="skills-column scroll-down">
+                <div className="skills-track">
+                  {[...skills.slice(8, 14), ...skills.slice(8, 14), ...skills.slice(8, 14)].map((skill, index) => (
+                    <div key={index} className="skill-card-marquee">
+                      <div className="skill-icon">{skill.logo}</div>
+                      <div className="skill-name">{skill.name}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          ))}
+            <div className="skills-marquee-line bottom-line"></div>
+          </div>
+
+          {/* Right Side - Skills Description */}
+          <div className="skills-description">
+            <div className="skills-icon-wrapper">
+              <Code2 size={48} />
+            </div>
+            <p className="skills-paragraph">
+              I don't just learn technologies — I apply them. Every skill listed here has been used in real projects to solve real problems. From building seamless frontend experiences with React to handling secure APIs and scalable backends with Node.js and Express, I focus on writing clean, optimized and production-ready code. My approach is simple: learn → build → improve → repeat. I constantly upgrade my tech stack and adapt to modern development trends, ensuring the solutions I create are fast, stable and meaningful for users.
+            </p>
+          </div>
         </div>
       </section>
 

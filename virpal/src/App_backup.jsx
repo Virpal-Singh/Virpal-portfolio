@@ -259,21 +259,28 @@ function App() {
       });
 
       // Stacking card effect for sections
-      const stackingSections = ['#about', '#skills', '#projects', '#experience', '#contact'];
+      const stackingSections = [
+        "#about",
+        "#skills",
+        "#projects",
+        "#experience",
+        "#contact",
+      ];
       stackingSections.forEach((sectionId, index) => {
         const section = document.querySelector(sectionId);
         if (section) {
-          gsap.fromTo(section,
+          gsap.fromTo(
+            section,
             {
               y: 100,
               opacity: 0.8,
-              scale: 0.95
+              scale: 0.95,
             },
             {
               scrollTrigger: {
                 trigger: section,
-                start: 'top bottom',
-                end: 'top center',
+                start: "top bottom",
+                end: "top center",
                 scrub: 1,
                 onEnter: () => {
                   gsap.to(section, {
@@ -281,10 +288,10 @@ function App() {
                     opacity: 1,
                     scale: 1,
                     duration: 0.5,
-                    ease: 'power2.out'
+                    ease: "power2.out",
                   });
-                }
-              }
+                },
+              },
             }
           );
         }
