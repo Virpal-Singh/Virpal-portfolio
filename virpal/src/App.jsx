@@ -29,7 +29,7 @@ import medisureImg from "./assets/medisure.png";
 import saathsourceImg from "./assets/saathsource.png";
 import vivaportalImg from "./assets/vivaportal.png";
 import virpalLogo from "./assets/virpal.png";
-import resumePDF from "./assets/Virpal_Sinh_MERN_Developer_Resume_final.pdf";
+import resumePDF from "./assets/Virpal_res.pdf";
 import "./App.css";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
