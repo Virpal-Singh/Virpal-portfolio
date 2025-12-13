@@ -37,9 +37,14 @@ npm run build
 
 ### For Vercel:
 1. Connect your GitHub repository
-2. Set environment variables in Vercel dashboard:
+2. The `vercel.json` file is already configured with:
+   - SPA routing (all routes redirect to index.html)
+   - Environment variables
+   - Security headers
+   - Asset caching
+3. Optional: Override environment variables in Vercel dashboard:
    - `VITE_API_BASE_URL=https://virpal-portfolio.onrender.com/api`
-3. Deploy
+4. Deploy automatically on push
 
 ### For Netlify:
 1. Connect your GitHub repository  
