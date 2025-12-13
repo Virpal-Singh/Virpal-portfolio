@@ -1,46 +1,38 @@
-// Fallback for environment variables
-const getEnvVar = (name, fallback) => {
-  try {
-    return process.env[name] || fallback;
-  } catch (error) {
-    return fallback;
-  }
-};
-
-const API_BASE_URL = getEnvVar(
-  "REACT_APP_API_BASE_URL",
-  "http://localhost:5000/api"
-);
+import { API_CONFIG } from '../config/api.js';
 
 class ApiService {
   constructor() {
-    this.baseURL = API_BASE_URL;
+    this.baseURL = API_CONFIG.BASE_URL;
+    console.log('API Base URL:', this.baseURL); // Debug log
   }
 
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
+    console.log('Making API request to:', url); // Debug log
 
     const config = {
       headers: {
         "Content-Type": "application/json",
         ...options.headers,
       },
+      signal: AbortSignal.timeout(API_CONFIG.TIMEOUT),
       ...options,
     };
 
     try {
       const response = await fetch(url, config);
-      const data = await response.json();
-
+      
+      // Check if response is ok before trying to parse JSON
       if (!response.ok) {
-        throw new Error(
-          data.message || `HTTP error! status: ${response.status}`
-        );
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+      
+      const data = await response.json();
       return data;
     } catch (error) {
       console.error("API Request Error:", error);
+      console.error("Request URL:", url);
+      console.error("Request Config:", config);
       throw error;
     }
   }
