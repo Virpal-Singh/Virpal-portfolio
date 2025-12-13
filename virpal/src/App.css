@@ -2095,3 +2095,32 @@
     font-size: 1rem;
   }
 }
+/* Contact Form Error Message */
+.error-message {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  color: #ef4444;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Form disabled state */
+.contact-form input:disabled,
+.contact-form textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.contact-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.contact-form button:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}

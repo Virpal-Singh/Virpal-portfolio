@@ -4,6 +4,8 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import SplitType from "split-type";
+import ApiService from "./services/api";
+import Chatbot from "./components/Chatbot";
 import {
   Code2,
   Rocket,
@@ -37,6 +39,8 @@ gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
   const heroRef = useRef(null);
 
   useEffect(() => {
@@ -828,6 +832,35 @@ function App() {
   const handleMouseEnter = () => {};
   const handleMouseLeave = () => {};
 
+  // Form submission handler
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    const formData = new FormData(e.target);
+    const messageData = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      message: formData.get('message')
+    };
+
+    try {
+      const response = await ApiService.sendMessage(messageData);
+      
+      if (response.success) {
+        setShowSuccessModal(true);
+        e.target.reset();
+        setTimeout(() => setShowSuccessModal(false), 4000);
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitError(error.message || 'Failed to send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const skills = [
     {
       name: "React.js",
@@ -1542,31 +1575,42 @@ function App() {
         </div>
 
         <div className="contact-container">
-          <form className="contact-form" onSubmit={(e) => {
-            e.preventDefault();
-            setShowSuccessModal(true);
-            e.target.reset();
-            setTimeout(() => setShowSuccessModal(false), 4000);
-          }}>
+          <form className="contact-form" onSubmit={handleFormSubmit}>
+            {submitError && (
+              <div className="error-message">
+                {submitError}
+              </div>
+            )}
             <div className="form-group">
               <label htmlFor="name">Name</label>
-              <input type="text" id="name" placeholder="Your name" required />
+              <input 
+                type="text" 
+                id="name" 
+                name="name"
+                placeholder="Your name" 
+                required 
+                disabled={isSubmitting}
+              />
             </div>
             <div className="form-group">
               <label htmlFor="email">Email</label>
               <input
                 type="email"
                 id="email"
+                name="email"
                 placeholder="your.email@example.com"
                 required
+                disabled={isSubmitting}
               />
             </div>
             <div className="form-group">
               <label htmlFor="message">Message</label>
               <textarea
                 id="message"
+                name="message"
                 placeholder="Tell me about your project..."
                 required
+                disabled={isSubmitting}
               ></textarea>
             </div>
             <button
@@ -1575,9 +1619,10 @@ function App() {
               style={{ width: "100%" }}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
+              disabled={isSubmitting}
             >
               <Mail size={20} />
-              Send Message
+              {isSubmitting ? 'Sending...' : 'Send Message'}
             </button>
           </form>
 
@@ -1633,7 +1678,7 @@ function App() {
               <Sparkles size={48} />
             </div>
             <h3>Message Sent Successfully!</h3>
-            <p>Thank you for reaching out. I'll get back to you soon!</p>
+            <p>Thank you for reaching out! Your message has been received and I'll get back to you within 24 hours.</p>
             <button 
               className="btn btn-primary"
               onClick={() => setShowSuccessModal(false)}
@@ -1645,6 +1690,9 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Chatbot */}
+      <Chatbot />
     </div>
   );
 }
