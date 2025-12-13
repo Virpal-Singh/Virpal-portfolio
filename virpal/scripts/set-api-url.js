@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
 // Script to set the correct API URL for deployment
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const args = process.argv.slice(2);
 const apiUrl = args[0];
@@ -14,9 +18,12 @@ if (!apiUrl) {
 }
 
 const envPath = path.join(__dirname, '..', '.env.production');
+// Ensure the API URL has /api at the end if not present
+const normalizedUrl = apiUrl.endsWith('/api') ? apiUrl : `${apiUrl}/api`;
+
 const envContent = `# Production API URL
-VITE_API_BASE_URL=${apiUrl}
-REACT_APP_API_BASE_URL=${apiUrl}
+VITE_API_BASE_URL=${normalizedUrl}
+REACT_APP_API_BASE_URL=${normalizedUrl}
 
 # Admin email
 VITE_ADMIN_EMAIL=77virpalsinh77@gmail.com

@@ -24,19 +24,33 @@ Set these environment variables on your deployment platform (Vercel/Netlify):
 
 ## Deployment Steps
 
+### Quick Fix for Current Issue:
+```bash
+# 1. Set the correct API URL
+npm run set-api-url https://virpal-portfolio.onrender.com
+
+# 2. Build the project
+npm run build
+
+# 3. Deploy the dist folder
+```
+
 ### For Vercel:
 1. Connect your GitHub repository
-2. Set environment variables in Vercel dashboard
+2. Set environment variables in Vercel dashboard:
+   - `VITE_API_BASE_URL=https://virpal-portfolio.onrender.com/api`
 3. Deploy
 
 ### For Netlify:
 1. Connect your GitHub repository  
-2. Set environment variables in Netlify dashboard
+2. Set environment variables in Netlify dashboard:
+   - `VITE_API_BASE_URL=https://virpal-portfolio.onrender.com/api`
 3. Deploy
 
 ### For Render:
 1. Connect your GitHub repository
-2. Set environment variables in Render dashboard
+2. Set environment variables in Render dashboard:
+   - `VITE_API_BASE_URL=https://virpal-portfolio.onrender.com/api`
 3. Deploy
 
 ## Important Notes:
