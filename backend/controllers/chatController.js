@@ -125,6 +125,8 @@ Continuously upgrade skills to stay aligned with modern technologies
 
 CONTACT INFORMATION
 Email: 77virpalsinh77@email.com
+Github: https://github.com/virpal-singh
+Linkedin: https://www.linkedin.com/in/virpal-sinh-222851314/
 Phone: +91 8114497438
 Portfolio: https://virpal.vercel.app
 Location: Reodar–Sirohi, Rajasthan, India
